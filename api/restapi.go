@@ -21,7 +21,15 @@ type RESTAPI struct {
 func New(logger *zap.SugaredLogger, port int) *RESTAPI {
 	router := mux.NewRouter()
 
-	controllers.CreateEmployeeRouter(router.PathPrefix("/employee").Subrouter(), logger)
+	empController := controllers.EmployeeController{
+		Logger: logger,
+	}
+
+	s := router.PathPrefix("/employee").Subrouter()
+	s.HandleFunc("/add", empController.AddEmployee)
+	s.HandleFunc("/get", empController.GetEmployee)
+	s.HandleFunc("/edit", empController.EditEmployee)
+	s.HandleFunc("/delete", empController.DeleteEmployee)
 
 	return &RESTAPI{
 		server: http.Server{
@@ -36,6 +44,7 @@ func New(logger *zap.SugaredLogger, port int) *RESTAPI {
 // Start diagnostics server.
 func (rapi *RESTAPI) Start() {
 	go func() {
+		rapi.logger.Info("Server starting listening at", rapi.server.Addr)
 		rapi.errors <- rapi.server.ListenAndServe()
 		close(rapi.errors)
 	}()

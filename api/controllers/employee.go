@@ -2,36 +2,39 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"
 	"registerWithTG/db/entities"
 )
 
-var log *zap.SugaredLogger
-
-func CreateEmployeeRouter(r *mux.Router, logger *zap.SugaredLogger) {
-	s := r.PathPrefix("/employee").Subrouter()
-	log = logger
-	s.HandleFunc("/add", addEmployee)
-	s.HandleFunc("/edit", editEmployee)
-	s.HandleFunc("/delete", deleteEmployee)
+type EmployeeController struct {
+	Logger *zap.SugaredLogger
 }
 
-func addEmployee(w http.ResponseWriter, r *http.Request) {
+func (ec *EmployeeController) AddEmployee(w http.ResponseWriter, r *http.Request) {
 	var e entities.Employee
 	err := json.NewDecoder(r.Body).Decode(&e)
+	ec.Logger.Info("add")
 	if err != nil {
-		log.Error("Error while decoding json", err)
+		ec.Logger.Error("Error while decoding json", err)
 	}
 
 }
 
-func editEmployee(w http.ResponseWriter, r *http.Request) {
+func (ec *EmployeeController) GetEmployee(w http.ResponseWriter, r *http.Request) {
+	ec.Logger.Info("get")
+	var e entities.Employee
+	err := json.NewDecoder(r.Body).Decode(&e)
+	if err != nil {
+		ec.Logger.Error("Error while decoding json", err)
+	}
 
 }
 
-func deleteEmployee(w http.ResponseWriter, r *http.Request) {
+func (ec *EmployeeController) EditEmployee(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (ec *EmployeeController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 
 }
